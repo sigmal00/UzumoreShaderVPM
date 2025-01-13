@@ -1,0 +1,16 @@
+{
+  "name": "jp.sigmal00.uzumore-shader.Editor",
+  "references": [
+    "lilToon.Editor"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "autoReferenced": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "defineConstraints": [],
+  "optionalUnityReferences": []
+}
