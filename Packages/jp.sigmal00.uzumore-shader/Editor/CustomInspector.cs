@@ -9,7 +9,6 @@ namespace lilToon
         // Custom properties
         MaterialProperty uzumoreAmount;
         MaterialProperty uzumoreMask;
-        MaterialProperty uzumoreBias;
 
         private static bool isShowCustomProperties;
         private const string shaderName = "Sigmal00/Uzumore";
@@ -28,7 +27,6 @@ namespace lilToon
             //LoadCustomLanguage("");
             uzumoreAmount = FindProperty("_UzumoreAmount", props);
             uzumoreMask = FindProperty("_UzumoreMask", props);
-            uzumoreBias = FindProperty("_UzumoreBias", props);
         }
 
         protected override void DrawCustomProperties(Material material)
@@ -50,8 +48,6 @@ namespace lilToon
 
                 m_MaterialEditor.ShaderProperty(uzumoreAmount, "どこまで埋もれるか（ｍ）");
                 m_MaterialEditor.ShaderProperty(uzumoreMask, "埋もれマスク");
-                m_MaterialEditor.ShaderProperty(uzumoreBias, "埋もれバイアス");
-                EditorGUILayout.HelpBox("Z-Fight防止のため、内側にあるメッシュは外側にあるメッシュよりもこのバイアス値を大きく設定してください。\n例）肌メッシュ:0.002, 服メッシュ:0.001", MessageType.Info);
 
                 EditorGUILayout.EndVertical();
                 EditorGUILayout.EndVertical();
