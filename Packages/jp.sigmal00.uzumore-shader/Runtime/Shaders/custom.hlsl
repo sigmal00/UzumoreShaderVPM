@@ -3,12 +3,13 @@
 
 // Custom variables
 #define LIL_CUSTOM_PROPERTIES \
-        float _UzumoreAmount; \
-        float _UzumoreBias;
+    float _UzumoreAmount; \
+    float _UzumoreBias;
 
 // Custom textures
 #define LIL_CUSTOM_TEXTURES \
-    TEXTURE2D(_UzumoreMask);
+    TEXTURE2D(_UzumoreMask); \
+    SAMPLER(sampler_UzumoreMask);
 
 // Add vertex shader input
 #define LIL_REQUIRE_APP_POSITION
