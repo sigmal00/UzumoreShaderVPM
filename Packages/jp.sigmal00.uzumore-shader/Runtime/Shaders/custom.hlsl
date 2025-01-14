@@ -21,7 +21,7 @@
 //#define LIL_REQUIRE_APP_TEXCOORD6
 //#define LIL_REQUIRE_APP_TEXCOORD7
 //#define LIL_REQUIRE_APP_COLOR
-//#define LIL_REQUIRE_APP_NORMAL
+#define LIL_REQUIRE_APP_NORMAL
 //#define LIL_REQUIRE_APP_TANGENT
 //#define LIL_REQUIRE_APP_VERTEXID
 
@@ -41,7 +41,7 @@
 
 // Inserting a process into the vertex shader
 #define LIL_CUSTOM_VERTEX_OS \
-    positionOS.xyz = calcIntrudeOffset(positionOS.xyz, uvMain);
+    positionOS.xyz = calcIntrudePos(positionOS.xyz, input.normalOS, uvMain);
 
 // Inserting a process into pixel shader
 //#define BEFORE_xx
