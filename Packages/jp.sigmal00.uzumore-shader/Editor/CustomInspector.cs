@@ -8,6 +8,7 @@ namespace lilToon
     {
         // Custom properties
         MaterialProperty uzumoreAmount;
+        MaterialProperty uzumoreBias;
         MaterialProperty uzumoreMask;
 
         private static bool isShowCustomProperties;
@@ -26,6 +27,7 @@ namespace lilToon
 
             //LoadCustomLanguage("");
             uzumoreAmount = FindProperty("_UzumoreAmount", props);
+            uzumoreBias = FindProperty("_UzumoreBias", props);
             uzumoreMask = FindProperty("_UzumoreMask", props);
         }
 
@@ -48,6 +50,8 @@ namespace lilToon
 
                 m_MaterialEditor.ShaderProperty(uzumoreAmount, "どこまで埋もれるか（ｍ）");
                 m_MaterialEditor.ShaderProperty(uzumoreMask, "埋もれマスク");
+                m_MaterialEditor.ShaderProperty(uzumoreBias, "埋もれバイアス");
+                EditorGUILayout.HelpBox("Z-Fight防止のためのパラメータです。Z-Fightを起こす場合はこの数値を大きくしてみてください。", MessageType.Info);
 
                 EditorGUILayout.EndVertical();
                 EditorGUILayout.EndVertical();

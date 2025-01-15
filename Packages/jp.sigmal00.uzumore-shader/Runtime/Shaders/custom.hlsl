@@ -3,7 +3,8 @@
 
 // Custom variables
 #define LIL_CUSTOM_PROPERTIES \
-    float _UzumoreAmount;
+    float _UzumoreAmount; \
+    float _UzumoreBias;
 
 // Custom textures
 #define LIL_CUSTOM_TEXTURES \

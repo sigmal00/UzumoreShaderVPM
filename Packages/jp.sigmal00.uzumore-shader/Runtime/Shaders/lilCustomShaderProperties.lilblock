@@ -2,4 +2,5 @@
         //----------------------------------------------------------------------------------------------------------------------
         // Custom Properties
         _UzumoreAmount  ("Uzumore Amount (m)", float) = 0.1
+        _UzumoreBias  ("Uzumore Bias (m)", float) = 0.001
         _UzumoreMask    ("Uzumore Mask", 2D) = "white" {}
