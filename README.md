@@ -1,13 +1,20 @@
 # UzumoreShader 
 埋もれシェーダーはカメラがメッシュの内側に潜り込んだ際に頂点をカメラの正面まで押し戻すことでメッシュの内側を見えなくするシェーダーです。
+liltoonのカスタムシェーダー機能を用いて作成されています。
 
 ## 導入
-[こちら](https://sigmal00.github.io/UzumoreShaderVPM/)のURLにアクセスし "Add To VCC" を選択してVCCに追加
+1. [こちら](https://sigmal00.github.io/UzumoreShaderVPM/)のURLにアクセスし "Add To VCC" を選択してVCCに追加
+2. VCCを開き、シェーダーを追加したいプロジェクトの"Manage Project"を選択
+3. パッケージ一覧から"UzumoreShader"を探してプロジェクトに追加する。
+4. インポートが完了するとSigmal00/Uzumore/...以下のシェーダーが選択できるようになります。
 
-### 非VPM版から移行する場合
-1. プロジェクトを閉じAsset以下にある非VPM版を削除
-2. VCC経由でVPM版をプロジェクトに追加
-3. プロジェクトを再度開く
+### unitypackage版から移行する場合
+プロジェクトにすでに[unitypackage版の埋もれシェーダー](https://github.com/sigmal00/UzumoreShader)をインポートしている方向けの手順です。
+1. [こちら](https://sigmal00.github.io/UzumoreShaderVPM/)のURLにアクセスし "Add To VCC" を選択してVCCに追加
+2. プロジェクトを閉じてからエクスプローラーなどで"Assets\Sigmal00\UzumoreShader"以下のフォルダを削除する。
+3. VCCを開き、シェーダーを追加したいプロジェクトの"Manage Project"を選択
+4. パッケージ一覧から"UzumoreShader"を探してプロジェクトに追加する。
+5. インポートが完了するとSigmal00/Uzumore/...以下のシェーダーが選択できるようになります。
 
 ## パラメータ説明
 ### どこまで埋もれるか（ｍ）
