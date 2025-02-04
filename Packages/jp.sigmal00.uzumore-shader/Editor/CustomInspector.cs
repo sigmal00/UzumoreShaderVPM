@@ -124,12 +124,11 @@ namespace lilToon
         }
 
         // You can create a menu like this
-        /*
-        [MenuItem("Assets/TemplateFull/Convert material to custom shader", false, 1100)]
+        [MenuItem("Assets/UzumoreShader/Convert material to UzumoreShader", false, 1100)]
         private static void ConvertMaterialToCustomShaderMenu()
         {
             if(Selection.objects.Length == 0) return;
-            TemplateFullInspector inspector = new TemplateFullInspector();
+            UzumoreInspector inspector = new UzumoreInspector();
             for(int i = 0; i < Selection.objects.Length; i++)
             {
                 if(Selection.objects[i] is Material)
@@ -138,7 +137,6 @@ namespace lilToon
                 }
             }
         }
-        */
     }
 }
 #endif
