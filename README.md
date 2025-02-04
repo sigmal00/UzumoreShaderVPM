@@ -3,11 +3,29 @@
 liltoonのカスタムシェーダー機能を用いて作成されています。
 
 ## 導入
+[ミルティナちゃん](https://booth.pm/ja/items/6538026)を例に導入の手順を説明していきます。
+
 ### 1.プロジェクトに埋もれシェーダーを追加する
 1. [こちら](https://sigmal00.github.io/UzumoreShaderVPM/)のURLにアクセスし "Add To VCC" を選択してVCCに追加
+
+![image](https://github.com/user-attachments/assets/7900e8c0-5613-4d8c-9065-1f4fe16fee54)
+
 2. VCCを開き、シェーダーを追加したいプロジェクトの"Manage Project"を選択
+
+![image](https://github.com/user-attachments/assets/1004759c-0bff-49ef-8b4a-d9a3f2eeef8d)
+
 3. パッケージ一覧から"UzumoreShader"を探してプロジェクトに追加する。
-4. インポートが完了するとマテリアルのシェーダー選択欄から"Sigmal00/Uzumore/..."以下のシェーダーが選択できるようになります。
+
+![image](https://github.com/user-attachments/assets/8469c2cc-aeb3-4d79-946e-7fdbd92d4600)
+
+4. liltoonのバージョンが1.8.5以前の場合はバージョンアップが要求されるので"Confirm"を選択します。
+
+![image](https://github.com/user-attachments/assets/c4d2d291-a34a-4906-8b8b-8c06dfb773a4)
+
+5. プロジェクトを開き、適当なマテリアルのシェーダー選択欄から"Sigmal00/Uzumore/..."以下のシェーダーが選択できるようになっていることを確認します。
+
+![image](https://github.com/user-attachments/assets/0e4ffb80-f33c-4012-a9bd-30ecc41b566f)
+
 
 <details><summary>unitypackage版から移行する場合はこちら</summary>
 
@@ -16,7 +34,8 @@ liltoonのカスタムシェーダー機能を用いて作成されています�
 2. プロジェクトを閉じてからエクスプローラーなどで"Assets\Sigmal00\UzumoreShader"以下のフォルダを削除する。
 3. VCCを開き、シェーダーを追加したいプロジェクトの"Manage Project"を選択
 4. パッケージ一覧から"UzumoreShader"を探してプロジェクトに追加する。
-5. インポートが完了するとマテリアルのシェーダー選択欄から"Sigmal00/Uzumore/..."以下のシェーダーが選択できるようになります。
+5. liltoonのバージョンが1.8.5以前の場合はバージョンアップが要求されるので"Confirm"を選択します。
+6. プロジェクトを開き、適当なマテリアルのシェーダー選択欄から"Sigmal00/Uzumore/..."以下のシェーダーが選択できるようになっていることを確認します。
 
 </details>
 
