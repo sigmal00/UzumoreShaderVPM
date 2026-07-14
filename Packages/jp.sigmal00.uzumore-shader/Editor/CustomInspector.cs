@@ -137,6 +137,40 @@ namespace lilToon
                 }
             }
         }
+
+        [MenuItem("Assets/UzumoreShader/Copy && Convert material to UzumoreShader", false, 1101)]
+        private static void CopyAndConvertMaterialToCustomShaderMenu()
+        {
+            if(Selection.objects.Length == 0) return;
+            UzumoreInspector inspector = new UzumoreInspector();
+            for(int i = 0; i < Selection.objects.Length; i++)
+            {
+                if(Selection.objects[i] is Material)
+                {
+                    Material originalMaterial = (Material)Selection.objects[i];
+                    Material copiedMaterial = new Material(originalMaterial);
+                    inspector.ConvertMaterialToCustomShader(copiedMaterial);
+                    string path = AssetDatabase.GetAssetPath(originalMaterial);
+                    string newPath = System.IO.Path.GetDirectoryName(path) + "/" + System.IO.Path.GetFileNameWithoutExtension(path) + "_Uzumore" + System.IO.Path.GetExtension(path);
+                    
+                    if(System.IO.File.Exists(newPath))
+                    {
+                        string directory = System.IO.Path.GetDirectoryName(newPath);
+                        string fileNameWithoutExtension = System.IO.Path.GetFileNameWithoutExtension(newPath);
+                        string extension = System.IO.Path.GetExtension(newPath);
+                        int counter = 1;
+                        
+                        while(System.IO.File.Exists(newPath))
+                        {
+                            newPath = directory + "/" + fileNameWithoutExtension + " " + counter + extension;
+                            counter++;
+                        }
+                    }
+                    
+                    AssetDatabase.CreateAsset(copiedMaterial, newPath);
+                }
+            }
+        }
     }
 }
 #endif
