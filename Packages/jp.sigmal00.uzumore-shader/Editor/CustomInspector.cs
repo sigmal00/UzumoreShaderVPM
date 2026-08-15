@@ -1,5 +1,6 @@
 #if UNITY_EDITOR
 using System.IO;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,6 +12,7 @@ namespace lilToon
         MaterialProperty uzumoreAmount;
         MaterialProperty uzumoreBias;
         MaterialProperty uzumoreMask;
+        readonly List<MaterialProperty> propertyList = new List<MaterialProperty>();
         GUIContent uzumoreMaskLabel;
         bool shouldLoadLanguage;
 
@@ -44,6 +46,11 @@ namespace lilToon
             uzumoreAmount = FindProperty("_UzumoreAmount", props);
             uzumoreBias = FindProperty("_UzumoreBias", props);
             uzumoreMask = FindProperty("_UzumoreMask", props);
+
+            propertyList.Clear();
+            propertyList.Add(uzumoreAmount);
+            propertyList.Add(uzumoreBias);
+            propertyList.Add(uzumoreMask);
         }
 
         protected override void DrawCustomProperties(Material material)
@@ -55,6 +62,11 @@ namespace lilToon
             // boxInner         inner box without label
             // customBox        box (similar to unity default box)
             // customToggleFont label for box
+
+            if (!ShouldDrawBlock(propertyList))
+            {
+                return;
+            }
 
             var titleLoc = GetLoc("sCustomShaderTitle");
             isShowCustomProperties = Foldout(titleLoc, titleLoc, isShowCustomProperties);
@@ -139,6 +151,18 @@ namespace lilToon
             ltsmgem     = Shader.Find("Hidden/" + shaderName + "/MultiGem");
         }
 
+        private static bool ShouldDrawBlock(List<MaterialProperty> propertyList)
+        {
+            foreach (var property in propertyList)
+            {
+                if (lilEditorGUI.CheckPropertyToDraw(property))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         // You can create a menu like this
         [MenuItem("Assets/UzumoreShader/Convert material to UzumoreShader", false, 1100)]
         private static void ConvertMaterialToCustomShaderMenu()
@@ -207,7 +231,7 @@ namespace lilToon
                     string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(newPath);
                     string extension = Path.GetExtension(newPath);
                     int counter = 1;
-                    
+
                     while(File.Exists(newPath))
                     {
                         newPath = directory + "/" + fileNameWithoutExtension + " " + counter + extension;
