@@ -25,7 +25,8 @@ namespace lilToon
             // If not, set isShowRenderMode to false
             //isShowRenderMode = false;
 
-            //LoadCustomLanguage("");
+            LoadCustomLanguage("0bbf2656367e4884686b214c7ac0184c");
+
             uzumoreAmount = FindProperty("_UzumoreAmount", props);
             uzumoreBias = FindProperty("_UzumoreBias", props);
             uzumoreMask = FindProperty("_UzumoreMask", props);
@@ -41,17 +42,18 @@ namespace lilToon
             // customBox        box (similar to unity default box)
             // customToggleFont label for box
 
-            isShowCustomProperties = Foldout("埋もれ設定", "埋もれ設定", isShowCustomProperties);
+            var titleLoc = GetLoc("sCustomShaderTitle");
+            isShowCustomProperties = Foldout(titleLoc, titleLoc, isShowCustomProperties);
             if(isShowCustomProperties)
             {
                 EditorGUILayout.BeginVertical(boxOuter);
-                EditorGUILayout.LabelField(GetLoc("埋もれ設定"), customToggleFont);
+                EditorGUILayout.LabelField(GetLoc("sCustomPropertyCategory"), customToggleFont);
                 EditorGUILayout.BeginVertical(boxInnerHalf);
 
-                m_MaterialEditor.ShaderProperty(uzumoreAmount, "どこまで埋もれるか（ｍ）");
-                m_MaterialEditor.ShaderProperty(uzumoreMask, "埋もれマスク");
-                m_MaterialEditor.ShaderProperty(uzumoreBias, "埋もれバイアス");
-                EditorGUILayout.HelpBox("Z-Fight防止のためのパラメータです。Z-Fightを起こす場合はこの数値を大きくしてみてください。", MessageType.Info);
+                lilEditorGUI.LocalizedProperty(m_MaterialEditor, uzumoreAmount);
+                lilEditorGUI.LocalizedProperty(m_MaterialEditor, uzumoreMask);
+                lilEditorGUI.LocalizedProperty(m_MaterialEditor, uzumoreBias);
+                EditorGUILayout.HelpBox(GetLoc("sUzumoreHelp"), MessageType.Info);
 
                 EditorGUILayout.EndVertical();
                 EditorGUILayout.EndVertical();
