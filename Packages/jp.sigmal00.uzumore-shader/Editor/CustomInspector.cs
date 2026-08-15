@@ -10,9 +10,18 @@ namespace lilToon
         MaterialProperty uzumoreAmount;
         MaterialProperty uzumoreBias;
         MaterialProperty uzumoreMask;
+        GUIContent uzumoreMaskLabel;
+        bool shouldLoadLanguage;
 
         private static bool isShowCustomProperties;
+        private static string prevLanguageName;
         private const string shaderName = "Sigmal00/Uzumore";
+
+        public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] props)
+        {
+            shouldLoadLanguage = lts == null || lts.name != shaderName + "/lilToon" || prevLanguageName != lilLanguageManager.langSet.languageName;
+            base.OnGUI(materialEditor, props);
+        }
 
         protected override void LoadCustomProperties(MaterialProperty[] props, Material material)
         {
@@ -25,7 +34,11 @@ namespace lilToon
             // If not, set isShowRenderMode to false
             //isShowRenderMode = false;
 
-            LoadCustomLanguage("0bbf2656367e4884686b214c7ac0184c");
+            if (shouldLoadLanguage)
+            {
+                LoadCustomLanguage("0bbf2656367e4884686b214c7ac0184c");
+                uzumoreMaskLabel = new GUIContent(GetLoc("sUzumoreMask"));
+            }
 
             uzumoreAmount = FindProperty("_UzumoreAmount", props);
             uzumoreBias = FindProperty("_UzumoreBias", props);
@@ -51,7 +64,7 @@ namespace lilToon
                 EditorGUILayout.BeginVertical(boxInnerHalf);
 
                 lilEditorGUI.LocalizedProperty(m_MaterialEditor, uzumoreAmount);
-                lilEditorGUI.LocalizedProperty(m_MaterialEditor, uzumoreMask);
+                lilEditorGUI.TexturePropertySingleLine(m_MaterialEditor, uzumoreMaskLabel, uzumoreMask);
                 lilEditorGUI.LocalizedProperty(m_MaterialEditor, uzumoreBias);
                 EditorGUILayout.HelpBox(GetLoc("sUzumoreHelp"), MessageType.Info);
 
