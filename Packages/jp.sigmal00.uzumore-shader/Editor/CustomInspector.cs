@@ -161,7 +161,17 @@ namespace lilToon
                 }
 #endif  // UNITY_2022_1_OR_NEWER
 
-                inspector.ConvertMaterialToCustomShader((Material)Selection.objects[i]);
+                Undo.RecordObject(material, "Assign customized lilToon shader (MenuItem: \"Assets/UzumoreShader/Convert material to UzumoreShader)\"");
+
+                string tagval = material.GetTag("VRCFallback", false);
+
+                inspector.ConvertMaterialToCustomShader(material);
+
+                if(tagval.Length != 0)
+                {
+                    AssetDatabase.SaveAssetIfDirty(material);
+                    material.SetOverrideTag("VRCFallback", tagval);
+                }
             }
         }
 
