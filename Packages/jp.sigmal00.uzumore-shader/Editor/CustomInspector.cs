@@ -18,7 +18,9 @@ namespace lilToon
 
         private static bool isShowCustomProperties;
         private static string prevLanguageName;
+        private static readonly Dictionary<string, MaterialProperty> copySourcePropertyDict = new Dictionary<string, MaterialProperty>();
         private const string shaderName = "Sigmal00/Uzumore";
+        private const string helpUrl = "https://github.com/sigmal00/UzumoreShaderVPM";
 
         public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] props)
         {
@@ -70,10 +72,12 @@ namespace lilToon
 
             var titleLoc = GetLoc("sCustomShaderTitle");
             isShowCustomProperties = Foldout(titleLoc, titleLoc, isShowCustomProperties);
+            DrawMenuButton(propertyList, helpUrl);
             if(isShowCustomProperties)
             {
                 EditorGUILayout.BeginVertical(boxOuter);
                 EditorGUILayout.LabelField(GetLoc("sCustomPropertyCategory"), customToggleFont);
+                DrawMenuButton(propertyList, helpUrl);
                 EditorGUILayout.BeginVertical(boxInnerHalf);
 
                 lilEditorGUI.LocalizedProperty(m_MaterialEditor, uzumoreAmount);
@@ -161,6 +165,118 @@ namespace lilToon
                 }
             }
             return false;
+        }
+
+        private static void DrawMenuButton(List<MaterialProperty> propertyList, string helpUrl = null)
+        {
+            var position = GUILayoutUtility.GetLastRect();
+            position.x += position.width - 24.0f;
+            position.width = 24.0f;
+
+            if (!GUI.Button(position, EditorGUIUtility.IconContent("_Popup"), middleButton))
+            {
+                return;
+            }
+
+            var menu = new GenericMenu();
+            menu.AddItem(new GUIContent(GetLoc("sCopy")), false, userData => CopyProperties((List<MaterialProperty>)userData), propertyList);
+            menu.AddItem(new GUIContent(GetLoc("sPaste")), false, userData => PasteProperties((List<MaterialProperty>)userData, false), propertyList);
+            menu.AddItem(new GUIContent(GetLoc("sPasteWithTexture")), false, userData => PasteProperties((List<MaterialProperty>)userData, true), propertyList);
+#if UNITY_2019_3_OR_NEWER
+            menu.AddItem(new GUIContent(GetLoc("sReset")), false, userData => ResetProperties((List<MaterialProperty>)userData), propertyList);
+#endif  // UNITY_2019_3_OR_NEWER
+            menu.AddItem(new GUIContent(GetLoc("sOpenManual")), false, userData => OpenHelpPage((string)userData), helpUrl);
+            menu.ShowAsContext();
+        }
+
+        private static void CopyProperties(List<MaterialProperty> propertyList)
+        {
+            copySourcePropertyDict.Clear();
+            foreach (var prop in propertyList)
+            {
+                copySourcePropertyDict[prop.name] = prop;
+            }
+        }
+
+        private static void PasteProperties(List<MaterialProperty> propertyList, bool shouldCopyTex)
+        {
+            foreach (var prop in propertyList)
+            {
+                if (!copySourcePropertyDict.TryGetValue(prop.name, out var sourceProp))
+                {
+                    continue;
+                }
+
+                switch (prop.type)
+                {
+                    case MaterialProperty.PropType.Color:
+                        prop.colorValue = sourceProp.colorValue;
+                        break;
+                    case MaterialProperty.PropType.Vector:
+                        prop.vectorValue = sourceProp.vectorValue;
+                        break;
+                    case MaterialProperty.PropType.Float:
+                    case MaterialProperty.PropType.Range:
+                        prop.floatValue = sourceProp.floatValue;
+                        break;
+                    case MaterialProperty.PropType.Texture:
+                        if (shouldCopyTex)
+                        {
+                            prop.textureValue = sourceProp.textureValue;
+                            prop.textureScaleAndOffset = sourceProp.textureScaleAndOffset;
+                        }
+                        break;
+                    case MaterialProperty.PropType.Int:
+                        prop.intValue = sourceProp.intValue;
+                        break;
+                }
+            }
+        }
+
+#if UNITY_2019_3_OR_NEWER
+        private static void ResetProperties(List<MaterialProperty> propertyList)
+        {
+            foreach (var prop in propertyList)
+            {
+                var shader = (prop.targets[0] as Material)?.shader;
+                if (shader == null)
+                {
+                    continue;
+                }
+
+                var propID = shader.FindPropertyIndex(prop.name);
+                if (propID == -1)
+                {
+                    continue;
+                }
+
+                switch (prop.type)
+                {
+                    case MaterialProperty.PropType.Color:
+                        prop.colorValue = shader.GetPropertyDefaultVectorValue(propID);
+                        break;
+                    case MaterialProperty.PropType.Vector:
+                        prop.vectorValue = shader.GetPropertyDefaultVectorValue(propID);
+                        break;
+                    case MaterialProperty.PropType.Float:
+                    case MaterialProperty.PropType.Range:
+                        prop.floatValue = shader.GetPropertyDefaultFloatValue(propID);
+                        break;
+                    case MaterialProperty.PropType.Texture:
+                        prop.textureValue = null;
+                        prop.textureScaleAndOffset = new Vector4(1.0f, 1.0f, 0.0f, 0.0f);
+                        break;
+                    case MaterialProperty.PropType.Int:
+                        prop.intValue = shader.GetPropertyDefaultIntValue(propID);
+                        break;
+                }
+            }
+        }
+#endif  // UNITY_2019_3_OR_NEWER
+
+        private static void OpenHelpPage(string url)
+        {
+            Application.OpenURL(url);
         }
 
         // You can create a menu like this
