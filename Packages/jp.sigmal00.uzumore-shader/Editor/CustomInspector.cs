@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 
@@ -146,10 +147,21 @@ namespace lilToon
             UzumoreInspector inspector = new UzumoreInspector();
             for(int i = 0; i < Selection.objects.Length; i++)
             {
-                if(Selection.objects[i] is Material)
+                Material material = Selection.objects[i] as Material;
+                if(material == null)
                 {
-                    inspector.ConvertMaterialToCustomShader((Material)Selection.objects[i]);
+                    continue;
                 }
+
+#if UNITY_2022_1_OR_NEWER
+                if(material.parent != null)
+                {
+                    Debug.LogWarningFormat("Ignore Material Variant: {0}", AssetDatabase.GetAssetPath(material));
+                    continue;
+                }
+#endif  // UNITY_2022_1_OR_NEWER
+
+                inspector.ConvertMaterialToCustomShader((Material)Selection.objects[i]);
             }
         }
 
@@ -160,30 +172,40 @@ namespace lilToon
             UzumoreInspector inspector = new UzumoreInspector();
             for(int i = 0; i < Selection.objects.Length; i++)
             {
-                if(Selection.objects[i] is Material)
+                Material originalMaterial = Selection.objects[i] as Material;
+                if(originalMaterial == null)
                 {
-                    Material originalMaterial = (Material)Selection.objects[i];
-                    Material copiedMaterial = new Material(originalMaterial);
-                    inspector.ConvertMaterialToCustomShader(copiedMaterial);
-                    string path = AssetDatabase.GetAssetPath(originalMaterial);
-                    string newPath = System.IO.Path.GetDirectoryName(path) + "/" + System.IO.Path.GetFileNameWithoutExtension(path) + "_Uzumore" + System.IO.Path.GetExtension(path);
-                    
-                    if(System.IO.File.Exists(newPath))
-                    {
-                        string directory = System.IO.Path.GetDirectoryName(newPath);
-                        string fileNameWithoutExtension = System.IO.Path.GetFileNameWithoutExtension(newPath);
-                        string extension = System.IO.Path.GetExtension(newPath);
-                        int counter = 1;
-                        
-                        while(System.IO.File.Exists(newPath))
-                        {
-                            newPath = directory + "/" + fileNameWithoutExtension + " " + counter + extension;
-                            counter++;
-                        }
-                    }
-                    
-                    AssetDatabase.CreateAsset(copiedMaterial, newPath);
+                    continue;
                 }
+
+#if UNITY_2022_1_OR_NEWER
+                if(originalMaterial.parent != null)
+                {
+                    Debug.LogWarningFormat("Ignore Material Variant: {0}", AssetDatabase.GetAssetPath(originalMaterial));
+                    continue;
+                }
+#endif  // UNITY_2022_1_OR_NEWER
+
+                Material copiedMaterial = new Material(originalMaterial);
+                inspector.ConvertMaterialToCustomShader(copiedMaterial);
+                string path = AssetDatabase.GetAssetPath(originalMaterial);
+                string newPath = Path.GetDirectoryName(path) + "/" + Path.GetFileNameWithoutExtension(path) + "_Uzumore" + Path.GetExtension(path);
+
+                if(File.Exists(newPath))
+                {
+                    string directory = Path.GetDirectoryName(newPath);
+                    string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(newPath);
+                    string extension = Path.GetExtension(newPath);
+                    int counter = 1;
+                    
+                    while(File.Exists(newPath))
+                    {
+                        newPath = directory + "/" + fileNameWithoutExtension + " " + counter + extension;
+                        counter++;
+                    }
+                }
+
+                AssetDatabase.CreateAsset(copiedMaterial, newPath);
             }
         }
     }
