@@ -11,7 +11,7 @@ Shader "Hidden/*LIL_SHADER_NAME*/MultiOutline"
         #include "custom.hlsl"
     ENDHLSL
 
-    lilSubShaderTags {"RenderType" = "Opaque" "Queue" = "Transparent-100"}
+    lilSubShaderTags {"RenderType" = "Opaque" "Queue" = "Geometry"}
     lilSubShaderInsert "lilCustomShaderInsert.lilblock"
     lilSubShaderBRP "DefaultMultiOutline"
     lilSubShaderURP "DefaultMultiOutline"
