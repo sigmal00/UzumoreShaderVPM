@@ -12,7 +12,7 @@ namespace lilToon
         MaterialProperty uzumoreAmount;
         MaterialProperty uzumoreBias;
         MaterialProperty uzumoreMask;
-        readonly List<MaterialProperty> propertyList = new List<MaterialProperty>();
+        readonly List<MaterialProperty> propertyList = new List<MaterialProperty>(3);
         GUIContent uzumoreMaskLabel;
         bool shouldLoadLanguage;
 
