@@ -24,7 +24,7 @@ namespace lilToon
 
         public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] props)
         {
-            shouldLoadLanguage = lts == null || lts.name != shaderName + "/lilToon" || prevLanguageName != lilLanguageManager.langSet.languageName;
+            shouldLoadLanguage = lts?.name != shaderName + "/lilToon" || prevLanguageName != lilLanguageManager.langSet.languageName;
             base.OnGUI(materialEditor, props);
         }
 
