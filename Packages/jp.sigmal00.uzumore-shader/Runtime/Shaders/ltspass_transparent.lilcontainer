@@ -15,8 +15,8 @@ Shader "Hidden/*LIL_SHADER_NAME*/ltspass_transparent"
 
     lilSubShaderInsert "lilCustomShaderInsert.lilblock"
     lilSubShaderBRP "DefaultTwoSide"
-    lilSubShaderURP "Default"
-    lilSubShaderHDRP "Default"
+    lilSubShaderURP "DefaultTwoSide"
+    lilSubShaderHDRP "DefaultTwoSide"
 
     CustomEditor "*LIL_EDITOR_NAME*"
 }
