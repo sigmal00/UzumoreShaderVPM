@@ -343,16 +343,24 @@ namespace lilToon
 
                 if(File.Exists(newPath))
                 {
-                    string directory = Path.GetDirectoryName(newPath);
-                    string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(newPath);
+                    string basePart = Path.GetDirectoryName(newPath) + "/" + Path.GetFileNameWithoutExtension(newPath);
+#if UNITY_2020_1_OR_NEWER
+                    if(EditorSettings.assetNamingUsesSpace)
+                    {
+                        basePart += " ";
+                    }
+#else
+                    basePath += " ";
+#endif  // UNITY_2020_1_OR_NEWER
                     string extension = Path.GetExtension(newPath);
                     int counter = 1;
 
-                    while(File.Exists(newPath))
+                    do
                     {
-                        newPath = directory + "/" + fileNameWithoutExtension + " " + counter + extension;
+                        newPath = basePart + counter + extension;
                         counter++;
                     }
+                    while (File.Exists(newPath));
                 }
 
                 AssetDatabase.CreateAsset(copiedMaterial, newPath);
