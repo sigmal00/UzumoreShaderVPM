@@ -1,4 +1,6 @@
 #if UNITY_EDITOR
+using System.IO;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -10,9 +12,21 @@ namespace lilToon
         MaterialProperty uzumoreAmount;
         MaterialProperty uzumoreBias;
         MaterialProperty uzumoreMask;
+        readonly List<MaterialProperty> propertyList = new List<MaterialProperty>(3);
+        GUIContent uzumoreMaskLabel;
+        bool shouldLoadLanguage;
 
         private static bool isShowCustomProperties;
+        private static string prevLanguageName;
+        private static readonly Dictionary<string, MaterialProperty> copySourcePropertyDict = new Dictionary<string, MaterialProperty>();
         private const string shaderName = "Sigmal00/Uzumore";
+        private const string helpUrl = "https://github.com/sigmal00/UzumoreShaderVPM";
+
+        public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] props)
+        {
+            shouldLoadLanguage = lts?.name != shaderName + "/lilToon" || prevLanguageName != lilLanguageManager.langSet.languageName;
+            base.OnGUI(materialEditor, props);
+        }
 
         protected override void LoadCustomProperties(MaterialProperty[] props, Material material)
         {
@@ -25,10 +39,20 @@ namespace lilToon
             // If not, set isShowRenderMode to false
             //isShowRenderMode = false;
 
-            //LoadCustomLanguage("");
+            if (shouldLoadLanguage)
+            {
+                LoadCustomLanguage("0bbf2656367e4884686b214c7ac0184c");
+                uzumoreMaskLabel = new GUIContent(GetLoc("sUzumoreMask"));
+            }
+
             uzumoreAmount = FindProperty("_UzumoreAmount", props);
             uzumoreBias = FindProperty("_UzumoreBias", props);
             uzumoreMask = FindProperty("_UzumoreMask", props);
+
+            propertyList.Clear();
+            propertyList.Add(uzumoreAmount);
+            propertyList.Add(uzumoreBias);
+            propertyList.Add(uzumoreMask);
         }
 
         protected override void DrawCustomProperties(Material material)
@@ -41,17 +65,25 @@ namespace lilToon
             // customBox        box (similar to unity default box)
             // customToggleFont label for box
 
-            isShowCustomProperties = Foldout("埋もれ設定", "埋もれ設定", isShowCustomProperties);
+            if (!ShouldDrawBlock(propertyList))
+            {
+                return;
+            }
+
+            var titleLoc = GetLoc("sCustomShaderTitle");
+            isShowCustomProperties = Foldout(titleLoc, titleLoc, isShowCustomProperties);
+            DrawMenuButton(propertyList, helpUrl);
             if(isShowCustomProperties)
             {
                 EditorGUILayout.BeginVertical(boxOuter);
-                EditorGUILayout.LabelField(GetLoc("埋もれ設定"), customToggleFont);
+                EditorGUILayout.LabelField(GetLoc("sCustomPropertyCategory"), customToggleFont);
+                DrawMenuButton(propertyList, helpUrl);
                 EditorGUILayout.BeginVertical(boxInnerHalf);
 
-                m_MaterialEditor.ShaderProperty(uzumoreAmount, "どこまで埋もれるか（ｍ）");
-                m_MaterialEditor.ShaderProperty(uzumoreMask, "埋もれマスク");
-                m_MaterialEditor.ShaderProperty(uzumoreBias, "埋もれバイアス");
-                EditorGUILayout.HelpBox("Z-Fight防止のためのパラメータです。Z-Fightを起こす場合はこの数値を大きくしてみてください。", MessageType.Info);
+                lilEditorGUI.LocalizedProperty(m_MaterialEditor, uzumoreAmount);
+                lilEditorGUI.TexturePropertySingleLine(m_MaterialEditor, uzumoreMaskLabel, uzumoreMask);
+                lilEditorGUI.LocalizedProperty(m_MaterialEditor, uzumoreBias);
+                EditorGUILayout.HelpBox(GetLoc("sUzumoreHelp"), MessageType.Info);
 
                 EditorGUILayout.EndVertical();
                 EditorGUILayout.EndVertical();
@@ -123,6 +155,130 @@ namespace lilToon
             ltsmgem     = Shader.Find("Hidden/" + shaderName + "/MultiGem");
         }
 
+        private static bool ShouldDrawBlock(List<MaterialProperty> propertyList)
+        {
+            foreach (var property in propertyList)
+            {
+                if (lilEditorGUI.CheckPropertyToDraw(property))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static void DrawMenuButton(List<MaterialProperty> propertyList, string helpUrl = null)
+        {
+            var position = GUILayoutUtility.GetLastRect();
+            position.x += position.width - 24.0f;
+            position.width = 24.0f;
+
+            if (!GUI.Button(position, EditorGUIUtility.IconContent("_Popup"), middleButton))
+            {
+                return;
+            }
+
+            var menu = new GenericMenu();
+            menu.AddItem(new GUIContent(GetLoc("sCopy")), false, userData => CopyProperties((List<MaterialProperty>)userData), propertyList);
+            menu.AddItem(new GUIContent(GetLoc("sPaste")), false, userData => PasteProperties((List<MaterialProperty>)userData, false), propertyList);
+            menu.AddItem(new GUIContent(GetLoc("sPasteWithTexture")), false, userData => PasteProperties((List<MaterialProperty>)userData, true), propertyList);
+#if UNITY_2019_3_OR_NEWER
+            menu.AddItem(new GUIContent(GetLoc("sReset")), false, userData => ResetProperties((List<MaterialProperty>)userData), propertyList);
+#endif  // UNITY_2019_3_OR_NEWER
+            menu.AddItem(new GUIContent(GetLoc("sOpenManual")), false, userData => OpenHelpPage((string)userData), helpUrl);
+            menu.ShowAsContext();
+        }
+
+        private static void CopyProperties(List<MaterialProperty> propertyList)
+        {
+            copySourcePropertyDict.Clear();
+            foreach (var prop in propertyList)
+            {
+                copySourcePropertyDict[prop.name] = prop;
+            }
+        }
+
+        private static void PasteProperties(List<MaterialProperty> propertyList, bool shouldCopyTex)
+        {
+            foreach (var prop in propertyList)
+            {
+                if (!copySourcePropertyDict.TryGetValue(prop.name, out var sourceProp))
+                {
+                    continue;
+                }
+
+                switch (prop.type)
+                {
+                    case MaterialProperty.PropType.Color:
+                        prop.colorValue = sourceProp.colorValue;
+                        break;
+                    case MaterialProperty.PropType.Vector:
+                        prop.vectorValue = sourceProp.vectorValue;
+                        break;
+                    case MaterialProperty.PropType.Float:
+                    case MaterialProperty.PropType.Range:
+                        prop.floatValue = sourceProp.floatValue;
+                        break;
+                    case MaterialProperty.PropType.Texture:
+                        if (shouldCopyTex)
+                        {
+                            prop.textureValue = sourceProp.textureValue;
+                            prop.textureScaleAndOffset = sourceProp.textureScaleAndOffset;
+                        }
+                        break;
+                    case MaterialProperty.PropType.Int:
+                        prop.intValue = sourceProp.intValue;
+                        break;
+                }
+            }
+        }
+
+#if UNITY_2019_3_OR_NEWER
+        private static void ResetProperties(List<MaterialProperty> propertyList)
+        {
+            foreach (var prop in propertyList)
+            {
+                var shader = (prop.targets[0] as Material)?.shader;
+                if (shader == null)
+                {
+                    continue;
+                }
+
+                var propID = shader.FindPropertyIndex(prop.name);
+                if (propID == -1)
+                {
+                    continue;
+                }
+
+                switch (prop.type)
+                {
+                    case MaterialProperty.PropType.Color:
+                        prop.colorValue = shader.GetPropertyDefaultVectorValue(propID);
+                        break;
+                    case MaterialProperty.PropType.Vector:
+                        prop.vectorValue = shader.GetPropertyDefaultVectorValue(propID);
+                        break;
+                    case MaterialProperty.PropType.Float:
+                    case MaterialProperty.PropType.Range:
+                        prop.floatValue = shader.GetPropertyDefaultFloatValue(propID);
+                        break;
+                    case MaterialProperty.PropType.Texture:
+                        prop.textureValue = null;
+                        prop.textureScaleAndOffset = new Vector4(1.0f, 1.0f, 0.0f, 0.0f);
+                        break;
+                    case MaterialProperty.PropType.Int:
+                        prop.intValue = shader.GetPropertyDefaultIntValue(propID);
+                        break;
+                }
+            }
+        }
+#endif  // UNITY_2019_3_OR_NEWER
+
+        private static void OpenHelpPage(string url)
+        {
+            Application.OpenURL(url);
+        }
+
         // You can create a menu like this
         [MenuItem("Assets/UzumoreShader/Convert material to UzumoreShader", false, 1100)]
         private static void ConvertMaterialToCustomShaderMenu()
@@ -131,9 +287,30 @@ namespace lilToon
             UzumoreInspector inspector = new UzumoreInspector();
             for(int i = 0; i < Selection.objects.Length; i++)
             {
-                if(Selection.objects[i] is Material)
+                Material material = Selection.objects[i] as Material;
+                if(material == null)
                 {
-                    inspector.ConvertMaterialToCustomShader((Material)Selection.objects[i]);
+                    continue;
+                }
+
+#if UNITY_2022_1_OR_NEWER
+                if(material.parent != null)
+                {
+                    Debug.LogWarningFormat("Ignore Material Variant: {0}", AssetDatabase.GetAssetPath(material));
+                    continue;
+                }
+#endif  // UNITY_2022_1_OR_NEWER
+
+                Undo.RecordObject(material, "Assign customized lilToon shader (MenuItem: \"Assets/UzumoreShader/Convert material to UzumoreShader)\"");
+
+                string tagval = material.GetTag("VRCFallback", false);
+
+                inspector.ConvertMaterialToCustomShader(material);
+
+                if(tagval.Length != 0)
+                {
+                    AssetDatabase.SaveAssetIfDirty(material);
+                    material.SetOverrideTag("VRCFallback", tagval);
                 }
             }
         }
@@ -145,30 +322,48 @@ namespace lilToon
             UzumoreInspector inspector = new UzumoreInspector();
             for(int i = 0; i < Selection.objects.Length; i++)
             {
-                if(Selection.objects[i] is Material)
+                Material originalMaterial = Selection.objects[i] as Material;
+                if(originalMaterial == null)
                 {
-                    Material originalMaterial = (Material)Selection.objects[i];
-                    Material copiedMaterial = new Material(originalMaterial);
-                    inspector.ConvertMaterialToCustomShader(copiedMaterial);
-                    string path = AssetDatabase.GetAssetPath(originalMaterial);
-                    string newPath = System.IO.Path.GetDirectoryName(path) + "/" + System.IO.Path.GetFileNameWithoutExtension(path) + "_Uzumore" + System.IO.Path.GetExtension(path);
-                    
-                    if(System.IO.File.Exists(newPath))
-                    {
-                        string directory = System.IO.Path.GetDirectoryName(newPath);
-                        string fileNameWithoutExtension = System.IO.Path.GetFileNameWithoutExtension(newPath);
-                        string extension = System.IO.Path.GetExtension(newPath);
-                        int counter = 1;
-                        
-                        while(System.IO.File.Exists(newPath))
-                        {
-                            newPath = directory + "/" + fileNameWithoutExtension + " " + counter + extension;
-                            counter++;
-                        }
-                    }
-                    
-                    AssetDatabase.CreateAsset(copiedMaterial, newPath);
+                    continue;
                 }
+
+#if UNITY_2022_1_OR_NEWER
+                if(originalMaterial.parent != null)
+                {
+                    Debug.LogWarningFormat("Ignore Material Variant: {0}", AssetDatabase.GetAssetPath(originalMaterial));
+                    continue;
+                }
+#endif  // UNITY_2022_1_OR_NEWER
+
+                Material copiedMaterial = new Material(originalMaterial);
+                inspector.ConvertMaterialToCustomShader(copiedMaterial);
+                string path = AssetDatabase.GetAssetPath(originalMaterial);
+                string newPath = Path.GetDirectoryName(path) + "/" + Path.GetFileNameWithoutExtension(path) + "_Uzumore" + Path.GetExtension(path);
+
+                if(File.Exists(newPath))
+                {
+                    string basePart = Path.GetDirectoryName(newPath) + "/" + Path.GetFileNameWithoutExtension(newPath);
+#if UNITY_2020_1_OR_NEWER
+                    if(EditorSettings.assetNamingUsesSpace)
+                    {
+                        basePart += " ";
+                    }
+#else
+                    basePath += " ";
+#endif  // UNITY_2020_1_OR_NEWER
+                    string extension = Path.GetExtension(newPath);
+                    int counter = 1;
+
+                    do
+                    {
+                        newPath = basePart + counter + extension;
+                        counter++;
+                    }
+                    while (File.Exists(newPath));
+                }
+
+                AssetDatabase.CreateAsset(copiedMaterial, newPath);
             }
         }
     }
