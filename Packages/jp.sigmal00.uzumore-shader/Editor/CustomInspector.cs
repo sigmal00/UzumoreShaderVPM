@@ -182,9 +182,7 @@ namespace lilToon
             menu.AddItem(new GUIContent(GetLoc("sCopy")), false, userData => CopyProperties((List<MaterialProperty>)userData), propertyList);
             menu.AddItem(new GUIContent(GetLoc("sPaste")), false, userData => PasteProperties((List<MaterialProperty>)userData, false), propertyList);
             menu.AddItem(new GUIContent(GetLoc("sPasteWithTexture")), false, userData => PasteProperties((List<MaterialProperty>)userData, true), propertyList);
-#if UNITY_2019_3_OR_NEWER
             menu.AddItem(new GUIContent(GetLoc("sReset")), false, userData => ResetProperties((List<MaterialProperty>)userData), propertyList);
-#endif  // UNITY_2019_3_OR_NEWER
             menu.AddItem(new GUIContent(GetLoc("sOpenManual")), false, userData => OpenHelpPage((string)userData), helpUrl);
             menu.ShowAsContext();
         }
@@ -233,7 +231,6 @@ namespace lilToon
             }
         }
 
-#if UNITY_2019_3_OR_NEWER
         private static void ResetProperties(List<MaterialProperty> propertyList)
         {
             foreach (var prop in propertyList)
@@ -272,7 +269,6 @@ namespace lilToon
                 }
             }
         }
-#endif  // UNITY_2019_3_OR_NEWER
 
         private static void OpenHelpPage(string url)
         {
