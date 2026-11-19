@@ -43,6 +43,7 @@ namespace lilToon
             {
                 LoadCustomLanguage("0bbf2656367e4884686b214c7ac0184c");
                 uzumoreMaskLabel = new GUIContent(GetLoc("sUzumoreMask"));
+                prevLanguageName = lilLanguageManager.langSet.languageName;
             }
 
             uzumoreAmount = FindProperty("_UzumoreAmount", props);
