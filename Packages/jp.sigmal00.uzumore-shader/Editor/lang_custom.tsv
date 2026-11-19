@@ -1,0 +1,7 @@
+Language	English	Japanese	Korean	Chinese Simplified	Chinese Traditional
+sCustomShaderTitle	Uzumore Config	埋もれ設定	Uzumore 설정	Uzumore 配置	Uzumore 設定
+sCustomPropertyCategory	Uzumore Config	埋もれ設定	Uzumore 설정	Uzumore 配置	Uzumore 設定
+sUzumoreAmount	UzumoreMask (m)	どこまで埋もれるか（ｍ）	푸시 양 (m)	推挤量 (m)	推擠量 (m)
+sUzumoreBias	Push Bias	埋もれバイアス	푸시 바이어스	偏移	偏移
+sUzumoreMask	Push Mask	埋もれマスク	푸시 마스크	推挤遮罩	推擠遮罩
+sUzumoreHelp	These are parameters to prevent Z-fighting. If Z-fighting occurs, try increasing this value.	Z-Fight防止のためのパラメータです。Z-Fightを起こす場合はこの数値を大きくしてみてください。	Z-Fight를 방지하기 위한 매개변수입니다. Z-Fight가 발생하는 경우 이 수치를 높여 보세요.	这是用于防止Z-Fight的参数。如果出现Z-Fight，请尝试增大该数值。	這是用於防止 Z-Fight 的參數。若發生 Z-Fight 現象，請嘗試將此數值調高。
