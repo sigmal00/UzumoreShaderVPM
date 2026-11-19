@@ -13,11 +13,11 @@ namespace lilToon
         MaterialProperty uzumoreBias;
         MaterialProperty uzumoreMask;
         readonly List<MaterialProperty> propertyList = new List<MaterialProperty>(3);
-        GUIContent uzumoreMaskLabel;
         bool shouldLoadLanguage;
 
         private static bool isShowCustomProperties;
         private static string prevLanguageName;
+        private static GUIContent uzumoreMaskLabel;
         private static readonly Dictionary<string, MaterialProperty> copySourcePropertyDict = new Dictionary<string, MaterialProperty>();
         private const string shaderName = "Sigmal00/Uzumore";
         private const string helpUrl = "https://github.com/sigmal00/UzumoreShaderVPM";
@@ -39,7 +39,7 @@ namespace lilToon
             // If not, set isShowRenderMode to false
             //isShowRenderMode = false;
 
-            if (shouldLoadLanguage)
+            if (shouldLoadLanguage || uzumoreMaskLabel == null)
             {
                 LoadCustomLanguage("0bbf2656367e4884686b214c7ac0184c");
                 uzumoreMaskLabel = new GUIContent(GetLoc("sUzumoreMask"));
