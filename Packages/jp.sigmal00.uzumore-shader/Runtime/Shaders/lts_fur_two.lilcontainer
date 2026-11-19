@@ -23,8 +23,8 @@ Shader "Hidden/*LIL_SHADER_NAME*/FurTwoPass"
     lilSubShaderTags {"RenderType" = "TransparentCutout" "Queue" = "Transparent"}
     lilSubShaderInsert "lilCustomShaderInsert.lilblock"
     lilSubShaderBRP "DefaultFurTwoPass"
-    lilSubShaderURP "DefaultFur"
-    lilSubShaderHDRP "DefaultFur"
+    lilSubShaderURP "DefaultFurTwoPass"
+    lilSubShaderHDRP "DefaultFurTwoPass"
 
     CustomEditor "*LIL_EDITOR_NAME*"
 }
