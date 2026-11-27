@@ -144,12 +144,12 @@ inline void ApplyFragmentNormal_Internal(inout float3 normalWS, lilFragData fd, 
     const float3 camPos = lilTransformWStoOS(_WorldSpaceCameraPos);
     const float maxPushAmount = Uzumore_CalcMaxPushAmount(uv);
     const float pushAmount = Uzumore_CalcPushAmount
-        (
-            positionOS,
-            camPos,
-            camDir,
-            maxPushAmount
-        );
+    (
+        positionOS,
+        camPos,
+        camDir,
+        maxPushAmount
+    );
 
     if (pushAmount <= 0.0f)
     {
@@ -173,16 +173,16 @@ inline void ApplyFragmentColor_Internal(inout float3 color, lilFragData fd, Uzum
     const float3 camPos = lilTransformWStoOS(_WorldSpaceCameraPos);
     const float maxPushAmount = Uzumore_CalcMaxPushAmount(uv);
     const float pushAmount = Uzumore_CalcPushAmount
-        (
-            positionOS,
-            camPos,
-            camDir,
-            maxPushAmount
-        );
+    (
+        positionOS,
+        camPos,
+        camDir,
+        maxPushAmount
+    );
 
     if (pushAmount <= 0.0f)
     {
-        //return;
+        return;
     }
 
     color *= lerp(1.0, _UzumoreColor.rgb, saturate(pushAmount/max(_UzumoreEdgeFadeWidth, 0.0001)));
