@@ -1,6 +1,6 @@
         //----------------------------------------------------------------------------------------------------------------------
         // Custom Properties
-        _UzumoreColor                   ("sUzumoreColor", Color) = (0,0,0,0)
+        _UzumoreColor                   ("sUzumoreColor", Color) = (1,1,1,1)
         _UzumoreAmount                  ("sUzumoreAmount", float) = 0.1
         _UzumoreMask                    ("sUzumoreMask", 2D) = "white" {}
         _UzumoreEdgeFadeWidth           ("sUzumoreEdgeFadeWidth", float) = 0.001
