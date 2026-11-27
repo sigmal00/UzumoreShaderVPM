@@ -9,10 +9,13 @@ namespace lilToon
     public class UzumoreInspector : lilToonInspector
     {
         // Custom properties
+        MaterialProperty uzumoreColor;
         MaterialProperty uzumoreAmount;
-        MaterialProperty uzumoreBias;
         MaterialProperty uzumoreMask;
-        readonly List<MaterialProperty> propertyList = new List<MaterialProperty>(3);
+        MaterialProperty uzumoreEdgeFadeWidth;
+        MaterialProperty uzumoreCorrectNormals;
+        MaterialProperty uzumoreBias;
+        readonly List<MaterialProperty> propertyList = new List<MaterialProperty>(6);
         bool shouldLoadLanguage;
 
         private static bool isShowCustomProperties;
@@ -46,14 +49,20 @@ namespace lilToon
                 prevLanguageName = lilLanguageManager.langSet.languageName;
             }
 
+            uzumoreColor = FindProperty("_UzumoreColor", props);
             uzumoreAmount = FindProperty("_UzumoreAmount", props);
-            uzumoreBias = FindProperty("_UzumoreBias", props);
             uzumoreMask = FindProperty("_UzumoreMask", props);
+            uzumoreEdgeFadeWidth = FindProperty("_UzumoreEdgeFadeWidth", props);
+            uzumoreCorrectNormals = FindProperty("_UzumoreCorrectNormals", props);
+            uzumoreBias = FindProperty("_UzumoreBias", props);
 
             propertyList.Clear();
+            propertyList.Add(uzumoreColor);
             propertyList.Add(uzumoreAmount);
-            propertyList.Add(uzumoreBias);
             propertyList.Add(uzumoreMask);
+            propertyList.Add(uzumoreEdgeFadeWidth);
+            propertyList.Add(uzumoreCorrectNormals);
+            propertyList.Add(uzumoreBias);
         }
 
         protected override void DrawCustomProperties(Material material)
@@ -81,8 +90,16 @@ namespace lilToon
                 DrawMenuButton(propertyList, helpUrl);
                 EditorGUILayout.BeginVertical(boxInnerHalf);
 
+                // 押し戻し
                 lilEditorGUI.LocalizedProperty(m_MaterialEditor, uzumoreAmount);
                 lilEditorGUI.TexturePropertySingleLine(m_MaterialEditor, uzumoreMaskLabel, uzumoreMask);
+
+                // 埋もれた場所の見た目
+                lilEditorGUI.DrawLine();
+                lilEditorGUI.LocalizedProperty(m_MaterialEditor, uzumoreColor);
+                lilEditorGUI.LocalizedProperty(m_MaterialEditor, uzumoreEdgeFadeWidth);
+                lilEditorGUI.LocalizedProperty(m_MaterialEditor, uzumoreCorrectNormals);
+
                 lilEditorGUI.LocalizedProperty(m_MaterialEditor, uzumoreBias);
                 EditorGUILayout.HelpBox(GetLoc("sUzumoreHelp"), MessageType.Info);
 

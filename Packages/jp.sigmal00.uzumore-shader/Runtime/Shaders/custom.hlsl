@@ -4,6 +4,9 @@
 // Custom variables
 #define LIL_CUSTOM_PROPERTIES \
     float _UzumoreAmount; \
+    float4 _UzumoreColor; \
+    float _UzumoreEdgeFadeWidth; \
+    int _UzumoreCorrectNormals; \
     float _UzumoreBias;
 
 // Custom textures
@@ -12,8 +15,8 @@
     SAMPLER(sampler_UzumoreMask);
 
 // Add vertex shader input
-#define LIL_REQUIRE_APP_POSITION
-#define LIL_REQUIRE_APP_TEXCOORD0
+//#define LIL_REQUIRE_APP_POSITION
+//#define LIL_REQUIRE_APP_TEXCOORD0
 //#define LIL_REQUIRE_APP_TEXCOORD1
 //#define LIL_REQUIRE_APP_TEXCOORD2
 //#define LIL_REQUIRE_APP_TEXCOORD3
@@ -22,7 +25,7 @@
 //#define LIL_REQUIRE_APP_TEXCOORD6
 //#define LIL_REQUIRE_APP_TEXCOORD7
 //#define LIL_REQUIRE_APP_COLOR
-#define LIL_REQUIRE_APP_NORMAL
+//#define LIL_REQUIRE_APP_NORMAL
 //#define LIL_REQUIRE_APP_TANGENT
 //#define LIL_REQUIRE_APP_VERTEXID
 
@@ -35,17 +38,46 @@
 //#define LIL_V2F_FORCE_NORMAL
 //#define LIL_V2F_FORCE_TANGENT
 //#define LIL_V2F_FORCE_BITANGENT
-//#define LIL_CUSTOM_V2F_MEMBER(id0,id1,id2,id3,id4,id5,id6,id7)
+
+#if defined(UNITY_PASS_SHADOWCASTER)
+// Don't use id0 because of following bug.
+//   https://github.com/lilxyzw/lilToon/blob/1.4.0/Assets/lilToon/Shader/Includes/lil_pass_shadowcaster.hlsl#L44-L47
+#define LIL_CUSTOM_V2F_MEMBER(id0,id1,id2,id3,id4,id5,id6,id7) \
+    float3 uzumoreOrgPosition : TEXCOORD ## id1; \
+    float3 uzumoreOrgNormal   : TEXCOORD ## id2;
+#else
+// uzumoreOrgPosition : 押し戻し前の頂点位置（オブジェクト空間）
+// uzumoreOrgNormal   : 頂点法線（オブジェクト空間）
+#define LIL_CUSTOM_V2F_MEMBER(id0,id1,id2,id3,id4,id5,id6,id7) \
+    float3 uzumoreOrgPosition : TEXCOORD ## id0; \
+    float3 uzumoreOrgNormal   : TEXCOORD ## id1;
+#endif
+
 
 // Add vertex copy
-//#define LIL_CUSTOM_VERT_COPY
+// ファーのパス（lil_common_vert_fur.hlsl）では LIL_V2F_OUT_BASE が定義されず、出力も v2g なので、
+// 書き込み先をダミーにして何もしないようにする。
+// 通常のパスでは lil_common_vert.hlsl が #undef してから定義し直すので、こちらの定義は影響しない。
+#define LIL_V2F_OUT_BASE g_uzumoreDummyVertCopy
+
+// LIL_CUSTOM_VERTEX_OS で static 変数に書いた色を v2f に詰める（VERTEX_OS の後に実行される）
+// 1パスアウトラインでは v2f が output.base になるので LIL_V2F_OUT_BASE を使う
+#define LIL_CUSTOM_VERT_COPY \
+    LIL_V2F_OUT_BASE.uzumoreOrgPosition = g_uzumoreOrgPositionOS; \
+    LIL_V2F_OUT_BASE.uzumoreOrgNormal   = g_uzumoreOrgNormalOS;
 
 // Inserting a process into the vertex shader
 #define LIL_CUSTOM_VERTEX_OS \
-    positionOS.xyz = calcIntrudePos(positionOS.xyz, input.normalOS, uvMain);
+    Uzumore_ApplyVertex(positionOS.xyz, input.normalOS, uvMain);
 
 // Inserting a process into pixel shader
-//#define BEFORE_xx
+#define BEFORE_AUDIOLINK \
+    Uzumore_ApplyFragmentNormal(fd, Uzumore_MakeFragInput(input.uzumoreOrgPosition, input.uzumoreOrgNormal), UZUMORE_HOOK_AUDIOLINK);
+#define BEFORE_MATCAP \
+    Uzumore_ApplyFragmentNormal(fd, Uzumore_MakeFragInput(input.uzumoreOrgPosition, input.uzumoreOrgNormal), UZUMORE_HOOK_MATCAP); \
+    Uzumore_ApplyFragmentColor(fd, Uzumore_MakeFragInput(input.uzumoreOrgPosition, input.uzumoreOrgNormal), UZUMORE_HOOK_MATCAP);
+#define BEFORE_FOG \
+    Uzumore_ApplyFragmentColor(fd, Uzumore_MakeFragInput(input.uzumoreOrgPosition, input.uzumoreOrgNormal), UZUMORE_HOOK_FOG);
 //#define OVERRIDE_xx
 
 //----------------------------------------------------------------------------------------------------------------------
